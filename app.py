@@ -4,18 +4,15 @@ import os
 
 app = Flask(__name__)
 
-# --- Configuración de conexión MySQL ---
-# Railway define estas variables automáticamente en tu servicio de base de datos
 MYSQLHOST = os.environ.get("MYSQLHOST")
 MYSQLUSER = os.environ.get("MYSQLUSER")
 MYSQLPASSWORD = os.environ.get("MYSQLPASSWORD")
 MYSQLDATABASE = os.environ.get("MYSQLDATABASE")
-MYSQLPORT = os.environ.get("MYSQLPORT", "3306")
+MYSQLPORT = os.environ.get("MYSQLPORT", "3306")  # <- valor por defecto
 
 if not all([MYSQLHOST, MYSQLUSER, MYSQLPASSWORD, MYSQLDATABASE]):
     raise ValueError("❌ Faltan variables de entorno MySQL en Railway.")
 
-# Conexión al servidor
 db = mysql.connector.connect(
     host=MYSQLHOST,
     user=MYSQLUSER,
@@ -23,7 +20,7 @@ db = mysql.connector.connect(
     database=MYSQLDATABASE,
     port=int(MYSQLPORT)
 )
-# --- Fin configuración de conexión ---
+
 
 @app.route('/')
 def index():
@@ -44,5 +41,6 @@ def agregar():
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=8080)
+
 
 
