@@ -2,16 +2,21 @@ from flask import Flask, render_template, request
 import mysql.connector
 import os
 
-app = Flask(__name__)
+from urllib.parse import urlparse
+import os
+import mysql.connector
 
-# Conexión a MySQL usando las variables de entorno de Railway
+app = Flask(__name__)
+url = urlparse(os.environ.get("DATABASE_URL"))
+
 db = mysql.connector.connect(
-    host=os.environ.get("MYSQLHOST"),
-    user=os.environ.get("MYSQLUSER"),
-    password=os.environ.get("MYSQLPASSWORD"),
-    database=os.environ.get("MYSQLDATABASE"),
-    port=int(os.environ.get("MYSQLPORT", 3306))  # <--- aquí convertimos a int con valor por defecto
+    host=url.hostname,
+    user=url.username,
+    password=url.password,
+    database=url.path[1:],
+    port=url.port or 3306
 )
+
 
 @app.route('/')
 def index():
@@ -32,3 +37,4 @@ def agregar():
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=8080)
+
