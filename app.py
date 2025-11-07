@@ -1,21 +1,28 @@
-from flask import Flask, render_template, request
-import mysql.connector
-import os
-
 from urllib.parse import urlparse
 import os
 import mysql.connector
 
-app = Flask(__name__)
-url = urlparse(os.environ.get("DATABASE_URL"))
+# Obtener la URL de conexión de Railway
+url_str = os.environ.get("DATABASE_URL")
 
+if not url_str:
+    raise ValueError("❌ No se encontró la variable DATABASE_URL en Railway")
+
+# Parsear la URL
+url = urlparse(url_str)
+
+# Definir puerto por defecto si no existe
+port = url.port or 3306
+
+# Conexión a MySQL
 db = mysql.connector.connect(
     host=url.hostname,
     user=url.username,
     password=url.password,
-    database=url.path[1:],
-    port=url.port or 3306
+    database=url.path.lstrip("/"),  # elimina la barra inicial
+    port=port
 )
+
 
 
 @app.route('/')
@@ -37,4 +44,5 @@ def agregar():
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=8080)
+
 
