@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Usuarios Flask</title>
+</head>
+<body>
+    <h1>Lista de usuarios</h1>
+    <ul>
+        {% for u in usuarios %}
+        <li>{{ u[0] }}</li>
+        {% endfor %}
+    </ul>
+
+    <form action="/agregar" method="post">
+        <input type="text" name="nombre" placeholder="Nuevo usuario" required>
+        <button type="submit">Agregar</button>
+    </form>
+</body>
+</html>
