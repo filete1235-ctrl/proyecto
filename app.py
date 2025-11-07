@@ -1,29 +1,29 @@
-from urllib.parse import urlparse
-import os
+from flask import Flask, render_template, request
 import mysql.connector
+import os
 
-# Obtener la URL de conexión de Railway
-url_str = os.environ.get("DATABASE_URL")
+app = Flask(__name__)
 
-if not url_str:
-    raise ValueError("❌ No se encontró la variable DATABASE_URL en Railway")
+# --- Configuración de conexión MySQL ---
+# Railway define estas variables automáticamente en tu servicio de base de datos
+MYSQLHOST = os.environ.get("MYSQLHOST")
+MYSQLUSER = os.environ.get("MYSQLUSER")
+MYSQLPASSWORD = os.environ.get("MYSQLPASSWORD")
+MYSQLDATABASE = os.environ.get("MYSQLDATABASE")
+MYSQLPORT = os.environ.get("MYSQLPORT", "3306")
 
-# Parsear la URL
-url = urlparse(url_str)
+if not all([MYSQLHOST, MYSQLUSER, MYSQLPASSWORD, MYSQLDATABASE]):
+    raise ValueError("❌ Faltan variables de entorno MySQL en Railway.")
 
-# Definir puerto por defecto si no existe
-port = url.port or 3306
-
-# Conexión a MySQL
+# Conexión al servidor
 db = mysql.connector.connect(
-    host=url.hostname,
-    user=url.username,
-    password=url.password,
-    database=url.path.lstrip("/"),  # elimina la barra inicial
-    port=port
+    host=MYSQLHOST,
+    user=MYSQLUSER,
+    password=MYSQLPASSWORD,
+    database=MYSQLDATABASE,
+    port=int(MYSQLPORT)
 )
-
-
+# --- Fin configuración de conexión ---
 
 @app.route('/')
 def index():
